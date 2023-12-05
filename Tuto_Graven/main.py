@@ -1,15 +1,14 @@
-from model.player import Player
-from model.weapon import Weapon
+from model.Batiment import *
 
-knife = Weapon("Couteau", 3)
-player1 = Player("Graven", 20, 3)
+# 4 immeubles
+immeuble1 = Immeuble("26 rue de la Gravenade", 3, 3)
+immeuble2 = Immeuble("28 rue de la Grevande", 5, 6)
+immeuble3 = Immeuble("53 rue elios mitterand", 2, 2)
+immeuble5 = Immeuble("120 rue pleiades", 8, 4)
 
-# donne un couteau faisant 3 dégats au joueur !
-player1.set_weapon(knife)
-player2 = Player("Bob", 20, 5)
+# 2 supermarché
+supermarche1 = Supermarche("27 rue de la Gravenade", 1, 12)
+supermarche2 = Supermarche("119 rue pleiades", 4, 25)
 
-player1.attack_player(player2)
-print(player1.get_pseudo(), "attaque", player2.get_pseudo())
-
-print("Bienvenue au joueur", player1.get_pseudo(), "/ Points de vie:", player1.get_health(), "/ Attaque:", player1.get_attack_value())
-print("Bienvenue au joueur", player2.get_pseudo(), "/ Points de vie:", player2.get_health(), "/ Attaque:", player2.get_attack_value())
+# 1 banque
+banque = Banque("53 rue elios mitterand", 25,50,"GravenBanque")
