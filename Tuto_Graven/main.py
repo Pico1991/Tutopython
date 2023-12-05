@@ -1,17 +1,15 @@
-def get_vowels_numbers(word):
-    # créer un compteur de voyelles
-    nb_vowels = 0
+from model.player import Player
+from model.weapon import Weapon
 
-    # pour chaque lettre du mot vous verifiez s'il s'agit d'un voyelle
-    for letter in word:
-        if letter in ['a', 'e', 'i', 'o', 'u', 'y']:
-            # on ajoute un au compteur
-            nb_vowels += 1
+knife = Weapon("Couteau", 3)
+player1 = Player("Graven", 20, 3)
 
-    # à la fin de la fonction, vous allez renvoyer le compteur
-    return nb_vowels
+# donne un couteau faisant 3 dégats au joueur !
+player1.set_weapon(knife)
+player2 = Player("Bob", 20, 5)
 
+player1.attack_player(player2)
+print(player1.get_pseudo(), "attaque", player2.get_pseudo())
 
-word = input("Entrer un mot")
-vowels_count = get_vowels_numbers(word)
-print("Il y a", vowels_count, "voyelles dans le mot", word)
+print("Bienvenue au joueur", player1.get_pseudo(), "/ Points de vie:", player1.get_health(), "/ Attaque:", player1.get_attack_value())
+print("Bienvenue au joueur", player2.get_pseudo(), "/ Points de vie:", player2.get_health(), "/ Attaque:", player2.get_attack_value())

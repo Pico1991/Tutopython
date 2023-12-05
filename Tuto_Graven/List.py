@@ -9,5 +9,5 @@ liste = len(words)
 
 if liste < 10:
     print(words[:2])
-else:s
+else:
     print(words[-3:])
