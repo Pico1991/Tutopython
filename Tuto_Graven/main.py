@@ -1,8 +1,17 @@
+print ("Bonjour")
+age = int(input("How old are you ?"))
+cost = 0
 
-#What is the money in my Wallet ?
-Wallet = int(input(" Tu as combien de sous ?"))
-#What is the cost ?
-PC = 500
-# Display the money remains ?
-print("Il reste {}", Wallet-PC)
+if age < 18 :
+    cost += 7
+    print ("You are young ! {} $".format(cost))
 
+else :
+    cost += 12
+    print("You are Old ! {} $".format(cost))
+
+
+if "Yes" == input("Do you want pop corn Yes/No?") :
+    cost += 5
+
+print("The addition is {} $".format(cost))
