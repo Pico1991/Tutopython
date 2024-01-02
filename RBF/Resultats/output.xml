@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 6.1.1 (Python 3.11.6 on win32)" generated="20231221 12:37:36.205" rpa="false" schemaversion="4">
+<suite id="s1" name="SeleniumLibTest" source="C:\Users\User\Documents\Tutopython\pythonProject\Test\SeleniumLibTest">
+<suite id="s1-s1" name="SeleniumLib" source="C:\Users\User\Documents\Tutopython\pythonProject\Test\SeleniumLibTest\SeleniumLib.robot">
+<test id="s1-s1-t1" name="test case" line="12">
+<kw name="Create Webdriver" library="SeleniumLibrary">
+<arg>chrome</arg>
+<arg>execute_path = C:\Users\User\Documents\Tutopython\pythonProject\Ressources\</arg>
+<doc>Creates an instance of Selenium WebDriver.</doc>
+<msg timestamp="20231221 12:37:36.307" level="INFO">Creating an instance of the chrome WebDriver.</msg>
+<msg timestamp="20231221 12:37:36.307" level="INFO">Cannot capture screenshot because no browser is open.</msg>
+<msg timestamp="20231221 12:37:36.307" level="FAIL">TypeError: 'module' object is not callable</msg>
+<status status="FAIL" starttime="20231221 12:37:36.307" endtime="20231221 12:37:36.309"/>
+</kw>
+<kw name="Open Browser" library="SeleniumLibrary">
+<arg>https://www.google.fr/</arg>
+<arg>chrome</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="NOT RUN" starttime="20231221 12:37:36.309" endtime="20231221 12:37:36.309"/>
+</kw>
+<status status="FAIL" starttime="20231221 12:37:36.306" endtime="20231221 12:37:36.310">TypeError: 'module' object is not callable</status>
+</test>
+<doc>Test basic sur Selenium</doc>
+<status status="FAIL" starttime="20231221 12:37:36.217" endtime="20231221 12:37:36.310"/>
+</suite>
+<status status="FAIL" starttime="20231221 12:37:36.206" endtime="20231221 12:37:36.311"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="1" skip="0" id="s1" name="SeleniumLibTest">SeleniumLibTest</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1" name="SeleniumLib">SeleniumLibTest.SeleniumLib</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

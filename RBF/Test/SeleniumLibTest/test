@@ -1,0 +1,623 @@
+//-------------------------------------------------------------------------
+// Code principal : TradeMgmt_00_S_Zone_
+//-------------------------------------------------------------------------
+///////////////////////////////////////////////
+// Plan_DAX_Short_12M_17200_16
+///////////////////////////////////////////////
+
+
+ONCE Forcing = 1.0
+ONCE Level = 1.0
+TIMEFRAME(4 Hour, UPDATEONCLOSE)
+
+///////////////////////////////////////////////
+// Desactivation de la zone si mm50 H4 quitte la zone_Short
+// A METTRE EN H4 !!
+///////////////////////////////////////////////
+once WatchH4mm50 = 0
+
+IF Average[50](close) CROSSES OVER  myLimiteH  THEN
+WatchH4mm50 = 1
+ENDIF
+IF Average[50](close) CROSSES UNDER  myLimiteH  THEN
+WatchH4mm50 = 0
+ENDIF
+
+
+TIMEFRAME(1 Hour, UPDATEONCLOSE)
+
+///////////////////////////////////////////////
+// Recherche de réaction sur la zone_Short : OK
+// A METTRE EN H1 !!
+///////////////////////////////////////////////
+
+// Initialisation du Statut de la zone en fonction du Forcing
+if Forcing = 0 THEN
+once ZoneShortActivated = 0
+ELSE
+once ZoneShortActivated = 1
+ENDIF
+// Installation sous la mm50  quand l'ecart des BB diminue et ne fait pas de plus bas (conditions additionnelles)
+EcartType = STD[20](close)
+VarEcartType = Variation(EcartType)
+Cvar = VarEcartType < Average[3](VarEcartType) and low[1]<low // high[1]>high pou le long
+
+if myLimiteH >= close and close >= myLimiteB and ZoneShortActivated = 0 THEN
+CActivationShort = close < Average[50](close)
+
+//En attente d'etre au dessus de la mm50 H1 (Stab) avant de rechercher les 3 clotures
+if close > Average[50](close) and CStabShort = 0 and CtimeCash THEN
+CStabShort = 1
+ENDIF
+//Si cloture de 3 Bougies sous la mm50 en cotation Cash OK
+if CActivationShort[2] and CActivationShort[1] and CActivationShort and CStabShort and Cvar and CtimeActivation Then
+ZoneShortActivated = 1
+ENDIF
+
+ENDIF
+
+// RESET si mm50 H4 sort de la zone
+IF ZoneShortActivated = 1 and WatchH4mm50 = 1 THEN
+ZoneShortActivated = 0
+ENDIF
+
+///////////////////////////////////////////////
+// Signal H1
+// A METTRE EN H1!!
+///////////////////////////////////////////////
+if CtimeFut THEN
+Code1H = CALL "MM7_ROD"
+C1H7mm = Code1H = -3 or Code1H = -2 or Code1H  = -1
+
+C1HCMI =  close < Average[50](close) and close < low[1]
+
+C1HSignalShort = C1H7mm or C1HCMI
+ENDIF
+
+TIMEFRAME(15 Minute, UPDATEONCLOSE)
+/////////////////////////////////////
+// Signal M15
+// A METTRE EN M15!!
+///////////////////////////////////////////////
+if CtimeFut THEN
+Code15M = CALL "MM7_ROD"
+C15M7mm = Code15M = -3 or Code15M = -2 or Code15M  = -1
+
+C15MCMI =  close < Average[50](close) and close < low[1]
+
+C15MSignalShort = C15M7mm or C15MCMI
+ENDIF
+
+
+
+TIMEFRAME(5 Minute, UPDATEONCLOSE)
+///////////////////////////////////////////////
+// Signal M5 : OK
+// A METTRE EN M5!!
+///////////////////////////////////////////////
+if CtimeCash THEN
+Code5M = CALL "MM7_ROD"
+C5M7mm = Code5M = -3 or Code5M = -2 or Code5M  = -1
+
+C5MCMI =  close < Average[50](close) and close < low[1]
+
+C5MSignalShort = C5M7mm or C5MCMI
+ENDIF
+
+
+
+TIMEFRAME(DEFAULT)
+
+//Variable à instancier
+//Level = 6 // Level Selection qui correspond à un scénario
+//Forcing = 0 // 0 si la zone doit etre activée ou 1 si la zone est deja activée
+//BorneLimite = 17200
+
+
+///////////////////////////////////////////////
+// Conditions initiales du broker
+///////////////////////////////////////////////
+once LimitationPosIG = 0.5 // 0.5 DAX // 0.2 DOW
+
+
+///////////////////////////////////////////////
+// Initialisation plan
+///////////////////////////////////////////////
+once init = 0
+
+IF init = 0 THEN
+
+//Trigger pour l'invalidation
+once TrigInvalidationAuto = 0
+
+//Initialisation des tableaux pour le scénario du Level
+once TPpartiel = 0 // RAZ de l'indicateur de scénarii
+unset($PriceTP)
+unset($ExitPos)
+
+myTimeZone, myLimiteH, myLimiteB, myZonInterH, myZoneinterB, myPosLeveL, myStopGeneral, myBorneInvalidation, myLevelTP, myLevelDecomp, myIndexmax, myFlagTradeON = CALL "Plan_DAX_Short_Mensuel_12"[Level, 0]
+
+
+FOR i = 0 TO myIndexmax DO
+//  ignored
+ignored, ignored, ignored, ignored, ignored, ignored, ignored, ignored, myLevelTP, myLevelDecomp, ignored, ignored = CALL "Plan_DAX_Short_Mensuel_12"[Level, i]
+$PriceTP[i] = myLevelTP
+$ExitPos[i] = myLevelDecomp
+NEXT
+
+init = 1
+ENDIF
+///////////////////////////////////////////////
+//Surveillance des conditions horaires
+///////////////////////////////////////////////
+CtimeActivation, CtimeCash, CtimeFut = CALL "TimeZoneAlgo"[0]
+
+///////////////////////////////////////////////
+// MAJ du fihier de configuration Hot Patching
+///////////////////////////////////////////////
+
+
+if NOT ONMARKET and OpenDay <> OpenDay [1] THEN
+// /!\/!\   Changer le StopGeneral pour forcer la MAJ /!\/!\
+myTimeZone, myLimiteH, myLimiteB, myZonInterH, myZoneinterB, myPosLeveL, myStopGeneral, myBorneInvalidation, myLevelTP, myLevelDecomp, myIndexmax, myFlagTradeON = CALL "Plan_DAX_Short_Mensuel_12"[Level, 0]
+if myStopGeneral <> myStopGeneral[1] THEN
+FOR i = 0 TO myIndexmax DO
+//  ignored
+ignored, ignored, ignored, ignored, ignored, ignored, ignored, ignored, myLevelTP, myLevelDecomp, ignored, ignored = CALL "Plan_DAX_Short_Mensuel_12"[Level, i]
+$PriceTP[i] = myLevelTP
+$ExitPos[i] = myLevelDecomp
+NEXT
+ENDIF
+ENDIF
+
+
+///////////////////////////////////////////////
+// Prise position
+///////////////////////////////////////////////
+
+CSignalGlobal = C5MSignalShort or C15MSignalShort or C1HSignalShort
+
+CLevel = myZoneinterB <= close and close <= myZonInterH
+
+if CtimeFut and CSignalGlobal and CLevel and ZoneShortActivated and myFlagTradeON THEN
+
+
+// Si on a deja fait du partiel on quitte pour reprendre une nouvelle pos
+IF ONMARKET and TPpartiel >= 1 THEN
+EXITSHORT AT MARKET
+ENDIF
+
+IF NOT ONMARKET THEN
+// Ajustement de la position si inférieur au pré requis Broker
+IF myPosLeveL < LimitationPosIG THEN
+SELLSHORT LimitationPosIG CONTRACTS AT MARKET
+AjustementIG  = 1
+ELSE
+SELLSHORT myPosLeveL CONTRACTS AT MARKET
+ENDIF
+SET STOP PLOSS (ABS(myStopGeneral - close))
+TPpartiel = 0 // RAZ de l'indicateur de scénarii
+ENDIF
+ENDIF
+
+IF AjustementIG and ONMARKET THEN
+EXITSHORT (LimitationPosIG-myPosLeveL) CONTRACTS AT MARKET
+AjustementIG = 0
+ENDIF
+///////////////////////////////////////////////
+// Prise TP & Mise à BE SHORT
+///////////////////////////////////////////////
+tmpBug = $PriceTP[TPpartiel]
+
+
+IF close CROSSES UNDER tmpBug THEN
+//EXIT des pos en Brut
+EXITSHORT ($ExitPos[TPpartiel]) CONTRACTS AT MARKET
+
+// mise à BE sur le level souhaité
+if TPpartiel = 0 THEN
+set stop breakeven
+ENDIF
+TPpartiel = TPpartiel +1
+ENDIF
+
+///////////////////////////////////////////////
+// Invalidation_Short
+///////////////////////////////////////////////
+
+IF OpenDay <> OpenDay[1] and DClose(1) > (myBorneInvalidation*1.002) and TrigInvalidationAuto = 0 THEN
+//Cas pour un Short
+ToleranceInvalidation = close * 0.002
+InvalidationAuto = DLow(1)+(DHigh(1) -DLow(1))*1.68 + ToleranceInvalidation
+TrigInvalidationAuto = 1
+ENDIF
+
+IF OpenDay <> OpenDay[1] and DClose(1)> InvalidationAuto and TrigInvalidationAuto = 1 AND ONMARKET THEN
+//Mise en TP au PE et arret du systemef
+set Target breakeven
+EXITSHORT (ABS(COUNTOFPOSITION)/2) CONTRACTS AT MARKET
+QUIT
+ENDIF
+
+
+//-------------------------------------------------------------------------
+// Fonction : MM7_ROD
+//-------------------------------------------------------------------------
+ctime = 080000 < time and time < 220000
+myPola261, myPola200, myPola1618, myPola1272, myPola618, myPola50, myPola382, myPola12721, myPola16181, myPola2001, myPola2618 = CALL "Zone_Intraday"
+
+mm50 = Average[50](close)
+mm20 = Average[20](close)
+mm7 = Average[7](close)
+
+if mm7[2]>mm7[1] and mm7[1] < mm7 THEN
+Reversemm7 = 1
+ELSIF mm7[2]<mm7[1] and mm7[1] > mm7  THEN
+Reversemm7 = -1
+ELSE
+Reversemm7 = 0
+MM7Code = 0
+ENDIF
+
+// Suivi du 161.8
+if Reversemm7 <> Reversemm7[1] THEN
+if close > myPola1618 and lowest[5](low)< myPola1618 and Reversemm7 = 1  and close > mm50 and ctime THEN
+MM7Code = 3
+
+//Contre 127
+ELSIF close < myPola1272 and highest[5](high)> myPola1272 and Reversemm7 = -1 and ctime THEN
+MM7Code = -3
+
+//Suivi zone pola
+ELSIF  close > myPola382 and close > mm20 and lowest[5](low)< mm20 and lowest[5](low) < myPola618 and Reversemm7 = 1 and ctime THEN
+MM7Code = 2
+ELSIF close < myPola618 and close < mm20 and highest[5](high)> mm20 and highest[5](high)> myPola382 and Reversemm7 = -1 and ctime THEN
+MM7Code = -2
+
+//Contre -127
+ELSIF close > myPola12721 and lowest[5](low)< myPola12721 and Reversemm7 = 1 and ctime THEN
+MM7Code = 1
+
+
+//Suivi 161.8
+ELSIF close < myPola16181 and highest[5](high)> myPola16181 and Reversemm7 = -1 and close < mm50 and ctime THEN
+MM7Code = -1
+ELSE
+MM7Code = 0
+ENDIF
+ENDIF
+
+RETURN MM7Code
+
+
+//-------------------------------------------------------------------------
+// Fonction : Plan_DAX_Short_Mensuel_12
+//-------------------------------------------------------------------------
+//GENERAL
+
+TimeZone = 0
+LimiteH = 17179
+LimiteB = 16666
+FlagTradeON = 1
+StopG = 17502.19
+BorneInvalidation = 17179
+
+
+IF Level = 6 THEN
+//LEVEL 6
+
+//Zone Globale du plan
+ZoneinterventionH = 17179
+ZoneinterventionB = 17057.932
+
+//Configuration du MM
+Pos = 1.05
+
+//Plan des TP et CP
+$TP[0] = 17015.866
+$TP[1] = 16922.5
+$TP[2] = 16861.966
+$TP[3] = 16787.068
+$TP[4] = 16666
+$TP[5] = 16527.49
+$TP[6] = 16348.966
+$TP[7] = 16153
+$TP[8] = 15835.966
+
+
+
+$DecompoPos[0] = 0.05
+$DecompoPos[1] = 0.05
+$DecompoPos[2] = 0.05
+$DecompoPos[3] = 0.1
+$DecompoPos[4] = 0.1
+$DecompoPos[5] = 0.1
+$DecompoPos[6] = 0.2
+$DecompoPos[7] = 0.2
+$DecompoPos[8] = 0.2
+
+
+ENDIF
+
+IF Level = 5 THEN
+//LEVEL 5
+
+//Zone Globale du plan
+ZoneinterventionH = 17057.932
+ZoneinterventionB = 17015.866
+
+//Configuration du MM
+Pos = 0.9
+
+//Plan des TP et CP
+$TP[0] = 16922.5
+$TP[1] = 16861.966
+$TP[2] = 16787.068
+$TP[3] = 16666
+$TP[4] = 16527.49
+$TP[5] = 16348.966
+$TP[6] = 16153
+$TP[7] = 15835.966
+
+
+
+
+$DecompoPos[0] = 0.05
+$DecompoPos[1] = 0.05
+$DecompoPos[2] = 0.1
+$DecompoPos[3] = 0.1
+$DecompoPos[4] = 0.1
+$DecompoPos[5] = 0.2
+$DecompoPos[6] = 0.1
+$DecompoPos[7] = 0.2
+
+
+
+ENDIF
+
+IF Level = 4 THEN
+//LEVEL 4
+
+//Zone Globale du plan
+ZoneinterventionH = 17015.866
+ZoneinterventionB = 16922.5
+
+//Configuration du MM
+Pos = 0.75
+
+//Plan des TP et CP
+$TP[0] = 16861.966
+$TP[1] = 16787.068
+$TP[2] = 16666
+$TP[3] = 16527.49
+$TP[4] = 16348.966
+$TP[5] = 16153
+$TP[6] = 15835.966
+
+
+
+
+
+$DecompoPos[0] = 0.05
+$DecompoPos[1] = 0.1
+$DecompoPos[2] = 0.1
+$DecompoPos[3] = 0.1
+$DecompoPos[4] = 0.1
+$DecompoPos[5] = 0.2
+$DecompoPos[6] = 0.1
+
+
+
+
+ENDIF
+
+IF Level = 3 THEN
+//LEVEL 3
+
+//Zone Globale du plan
+ZoneinterventionH = 16922.5
+ZoneinterventionB = 16861.966
+
+//Configuration du MM
+Pos = 0.45
+
+//Plan des TP et CP
+$TP[0] = 16787.068
+$TP[1] = 16666
+$TP[2] = 16527.49
+$TP[3] = 16348.966
+$TP[4] = 16153
+
+
+
+
+
+
+
+$DecompoPos[0] = 0.05
+$DecompoPos[1] = 0.05
+$DecompoPos[2] = 0.1
+$DecompoPos[3] = 0.1
+$DecompoPos[4] = 0.1
+
+
+
+
+
+
+ENDIF
+
+IF Level = 2 THEN
+//LEVEL 2
+
+//Zone Globale du plan
+ZoneinterventionH = 16861.966
+ZoneinterventionB = 16787.068
+
+//Configuration du MM
+Pos = 0.3
+
+//Plan des TP et CP
+$TP[0] = 16666
+$TP[1] = 16527.49
+$TP[2] = 16348.966
+
+
+
+
+
+
+
+
+
+$DecompoPos[0] = 0.099
+$DecompoPos[1] = 0.099
+$DecompoPos[2] = 0.099
+
+
+
+
+
+
+
+
+ENDIF
+
+IF Level = 1 THEN
+//LEVEL 1
+
+//Zone Globale du plan
+ZoneinterventionH = 16787.068
+ZoneinterventionB = 16666
+
+//Configuration du MM
+Pos = 0.15
+
+//Plan des TP et CP
+$TP[0] = 16527.49
+
+
+
+
+
+
+
+
+
+
+
+$DecompoPos[0] = 0.15
+
+
+
+
+
+
+
+
+
+
+ENDIF
+
+RETURN TimeZone as "TimeZone",LimiteH as "LimiteH", LimiteB as "LimiteB", ZoneinterventionH as "ZonInterH",ZoneinterventionB as "ZoneinterB", Pos as "PosLeveL", StopG as "StopGeneral", BorneInvalidation as " BorneInvalidation", $TP[Indice] as "LevelTP", $DecompoPos[Indice] as "LevelDecomp" , lastset($DecompoPos) as "Indexmax", FlagTradeON as "FlagTradeON"
+
+
+//-------------------------------------------------------------------------
+// Fonction : TimeZoneAlgo
+//-------------------------------------------------------------------------
+DEFPARAM CalculateOnLastBars = 5000
+
+IF SelectArea = 0 THEN
+CtimeActivation = 120000 <= time and time <= 173000
+CtimeCash = 090000 <= time and time <= 173000
+CtimeFut = 080000 <= time and time <= 220000
+
+ELSIF SelectArea = 1 THEN
+// US avec EUR synchronisé
+CtimeActivation = 183000 <= time and time <= 220000
+CtimeCash = 153000 <= time and time <= 220000
+CtimeFut = 080000 <= time and time <= 220000
+////////////////
+// Integrer les décalage directement icic avec un calendrier ?
+///////////////
+ELSE
+CtimeActivation = 0
+CtimeCash = 0
+CtimeFut = 0
+ENDIF
+
+RETURN CtimeActivation as "CtimeActivation", CtimeCash as "CtimeCash", CtimeFut as "CtimeFut"
+
+
+//-------------------------------------------------------------------------
+// Fonction : Zone_Intraday
+//-------------------------------------------------------------------------
+DEFPARAM CalculateOnLastBars = 10000
+
+once PresenceDimanche = 0
+once pola618 = lowest[3](low)+(highest[3](high)-lowest[3](low))* 0.618
+once pola382 = lowest[3](low)+(highest[3](high)-lowest[3](low))* 0.382
+
+if OpenDay <> OpenDay [1] and DayOfWeek = 0 THEN
+PresenceDimanche = 1
+ELSE
+PresenceDimanche = 0
+ENDIF
+
+if PresenceDimanche and DayOfWeek = 1 THEN
+
+C1 = DClose(2)>DHigh(3) and DClose(2) > pola618
+C2 = DClose(2)<DLow(3) and DClose(2) < pola382
+Cbreak = C1 or C2
+
+if Cbreak Then
+Ecart = DHigh(2) - DLow(2)
+Support = DLow(2)
+ENDIF
+ELSIF PresenceDimanche and DayOfWeek = 2 THEN
+
+C1 = DClose(1)>DHigh(3) and DClose(1) > pola618
+C2 = DClose(1)<DLow(3) and DClose(1) < pola382
+
+Cbreak = C1 or C2
+
+if Cbreak Then
+Ecart = DHigh(1) - DLow(1)
+Support = DLow(1)
+endif
+ELSE
+
+C1 = DClose(1)>DHigh(2) and DClose(1) > pola618
+C2 = DClose(1)<DLow(2) and DClose(1) < pola382
+
+Cbreak = C1 or C2
+
+if Cbreak Then
+Ecart = DHigh(1) - DLow(1)
+Support = DLow(1)
+endif
+ENDIF
+
+
+ZoneCounter261 =   Support + Ecart*2.618
+ZoneCounter200 =   Support + Ecart*2
+
+ZoneCounter161 =   Support + Ecart*1.618
+ZoneCounter127 =   Support + Ecart*1.272
+
+pola618 =   Support + Ecart*0.618
+pola500 = Support + Ecart*0.5
+pola382 =  Support + Ecart*0.382
+
+ZoneCounter027 =   Support - Ecart*0.272
+ZoneCounter061 =   Support - Ecart*0.618
+
+ZoneCounter020 =   Support - Ecart*1
+ZoneCounter026 =   Support - Ecart*1.618
+
+
+
+
+
+RETURN ZoneCounter261 as "Pola + 261", ZoneCounter200 as "Pola + 200", ZoneCounter161 as "Pola + 161.8", ZoneCounter127 as "Pola + 127.2", pola618 as "Pola 61.8", pola500 as "Pola 50", pola382 as "Pola 382.", ZoneCounter027 as "Pola - 127.2", ZoneCounter061 as "Pola - 161.8",ZoneCounter020 as "Pola -200", ZoneCounter026 as "Pola -261.8"
+//

@@ -12,3 +12,5 @@ supermarche2 = Supermarche("119 rue pleiades", 4, 25)
 
 # 1 banque
 banque = Banque("53 rue elios mitterand", 25,50,"GravenBanque")
+
+print(f"{banque.adresse}")
