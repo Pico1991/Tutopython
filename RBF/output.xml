@@ -1,76 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 6.1.1 (Python 3.11.6 on win32)" generated="20231229 16:16:22.593" rpa="false" schemaversion="4">
+<robot generator="Robot 6.1.1 (Python 3.11.6 on win32)" generated="20240110 10:28:13.628" rpa="false" schemaversion="4">
 <suite id="s1" name="RBF" source="C:\Users\User\Documents\Tutopython\RBF">
 <suite id="s1-s1" name="Test" source="C:\Users\User\Documents\Tutopython\RBF\Test">
-<suite id="s1-s1-s1" name="SeleniumLibTest" source="C:\Users\User\Documents\Tutopython\RBF\Test\SeleniumLibTest">
-<suite id="s1-s1-s1-s1" name="SeleniumLib Incognito" source="C:\Users\User\Documents\Tutopython\RBF\Test\SeleniumLibTest\SeleniumLib_Incognito.robot">
-<test id="s1-s1-s1-s1-t1" name="TestCas01" line="13">
-<kw name="Evaluate" library="BuiltIn">
-<var>${chrome_options}</var>
-<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
-<doc>Evaluates the given expression in Python and returns the result.</doc>
-<msg timestamp="20231229 16:16:22.756" level="INFO">${chrome_options} = &lt;selenium.webdriver.chrome.options.Options object at 0x000001F4D3554210&gt;</msg>
-<status status="PASS" starttime="20231229 16:16:22.756" endtime="20231229 16:16:22.756"/>
-</kw>
-<kw name="Call Method" library="BuiltIn">
-<arg>${chrome_options}</arg>
-<arg>add_argument</arg>
-<arg>--incognito</arg>
-<doc>Calls the named method of the given object with the provided arguments.</doc>
-<status status="PASS" starttime="20231229 16:16:22.756" endtime="20231229 16:16:22.756"/>
-</kw>
-<kw name="Call Method" library="BuiltIn">
-<arg>${chrome_options}</arg>
-<arg>add_argument</arg>
-<arg>--start-maximized</arg>
-<doc>Calls the named method of the given object with the provided arguments.</doc>
-<status status="PASS" starttime="20231229 16:16:22.756" endtime="20231229 16:16:22.756"/>
-</kw>
-<kw name="Create Webdriver" library="SeleniumLibrary">
+<suite id="s1-s1-s1" name="Trainning" source="C:\Users\User\Documents\Tutopython\RBF\Test\trainning">
+<suite id="s1-s1-s1-s1" name="01 A First Example" source="C:\Users\User\Documents\Tutopython\RBF\Test\trainning\01_a_first_example.robot">
+<test id="s1-s1-s1-s1-t1" name="Perform a search for T-shirts" line="6">
+<kw name="Open Browser" library="SeleniumLibrary">
+<arg>http://automationpractice.com</arg>
 <arg>Chrome</arg>
-<arg>options=${chrome_options}</arg>
-<doc>Creates an instance of Selenium WebDriver.</doc>
-<msg timestamp="20231229 16:16:22.757" level="INFO">Creating an instance of the Chrome WebDriver.</msg>
-<status status="PASS" starttime="20231229 16:16:22.757" endtime="20231229 16:16:28.879"/>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<msg timestamp="20240110 10:28:13.735" level="INFO">Opening browser 'Chrome' to base url 'http://automationpractice.com'.</msg>
+<status status="PASS" starttime="20240110 10:28:13.734" endtime="20240110 10:28:15.783"/>
 </kw>
-<kw name="Go To" library="SeleniumLibrary">
-<arg>${URL}</arg>
-<doc>Navigates the current browser window to the provided ``url``.</doc>
-<msg timestamp="20231229 16:16:28.880" level="INFO">Opening url 'https://www.google.fr/'</msg>
-<status status="PASS" starttime="20231229 16:16:28.879" endtime="20231229 16:16:35.816"/>
+<kw name="Maximize Browser Window" library="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" starttime="20240110 10:28:15.783" endtime="20240110 10:28:15.891"/>
 </kw>
-<kw name="Sleep" library="BuiltIn">
-<arg>2</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<msg timestamp="20231229 16:16:37.818" level="INFO">Slept 2 seconds</msg>
-<status status="PASS" starttime="20231229 16:16:35.817" endtime="20231229 16:16:37.818"/>
+<kw name="Input Text" library="SeleniumLibrary">
+<arg>id:search_query_top</arg>
+<arg>t-shirt</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<msg timestamp="20240110 10:28:15.892" level="INFO">Typing text 't-shirt' into text field 'id:search_query_top'.</msg>
+<msg timestamp="20240110 10:28:16.001" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-1.png"&gt;&lt;img src="selenium-screenshot-1.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg timestamp="20240110 10:28:16.001" level="FAIL">Element with locator 'id:search_query_top' not found.</msg>
+<status status="FAIL" starttime="20240110 10:28:15.891" endtime="20240110 10:28:16.007"/>
 </kw>
-<kw name="Close All Browsers" library="SeleniumLibrary">
-<doc>Closes all open browsers and resets the browser cache.</doc>
-<status status="PASS" starttime="20231229 16:16:37.818" endtime="20231229 16:16:43.918"/>
+<kw name="Click Button" library="SeleniumLibrary">
+<arg>name:submit_search</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="NOT RUN" starttime="20240110 10:28:16.008" endtime="20240110 10:28:16.008"/>
 </kw>
-<status status="PASS" starttime="20231229 16:16:22.755" endtime="20231229 16:16:43.918"/>
+<kw name="Title Should Be" library="SeleniumLibrary">
+<arg>Search - My Store</arg>
+<doc>Verifies that the current page title equals ``title``.</doc>
+<status status="NOT RUN" starttime="20240110 10:28:16.008" endtime="20240110 10:28:16.008"/>
+</kw>
+<kw name="Close Browser" library="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="NOT RUN" starttime="20240110 10:28:16.008" endtime="20240110 10:28:16.008"/>
+</kw>
+<status status="FAIL" starttime="20240110 10:28:13.734" endtime="20240110 10:28:16.009">Element with locator 'id:search_query_top' not found.</status>
 </test>
-<doc>Test basic sur Selenium</doc>
-<status status="PASS" starttime="20231229 16:16:22.609" endtime="20231229 16:16:43.919"/>
+<doc>A first example using SeleniumLibrary</doc>
+<status status="FAIL" starttime="20240110 10:28:13.642" endtime="20240110 10:28:16.010"/>
 </suite>
-<status status="PASS" starttime="20231229 16:16:22.608" endtime="20231229 16:16:43.920"/>
+<status status="FAIL" starttime="20240110 10:28:13.641" endtime="20240110 10:28:16.010"/>
 </suite>
-<status status="PASS" starttime="20231229 16:16:22.607" endtime="20231229 16:16:43.921"/>
+<status status="FAIL" starttime="20240110 10:28:13.640" endtime="20240110 10:28:16.011"/>
 </suite>
-<status status="PASS" starttime="20231229 16:16:22.593" endtime="20231229 16:16:43.921"/>
+<status status="FAIL" starttime="20240110 10:28:13.629" endtime="20240110 10:28:16.012"/>
 </suite>
 <statistics>
 <total>
-<stat pass="1" fail="0" skip="0">All Tests</stat>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
 </total>
 <tag>
 </tag>
 <suite>
-<stat pass="1" fail="0" skip="0" id="s1" name="RBF">RBF</stat>
-<stat pass="1" fail="0" skip="0" id="s1-s1" name="Test">RBF.Test</stat>
-<stat pass="1" fail="0" skip="0" id="s1-s1-s1" name="SeleniumLibTest">RBF.Test.SeleniumLibTest</stat>
-<stat pass="1" fail="0" skip="0" id="s1-s1-s1-s1" name="SeleniumLib Incognito">RBF.Test.SeleniumLibTest.SeleniumLib Incognito</stat>
+<stat pass="0" fail="1" skip="0" id="s1" name="RBF">RBF</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1" name="Test">RBF.Test</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1-s1" name="Trainning">RBF.Test.Trainning</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1-s1-s1" name="01 A First Example">RBF.Test.Trainning.01 A First Example</stat>
 </suite>
 </statistics>
 <errors>

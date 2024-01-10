@@ -1,24 +1,26 @@
 *** Settings ***
-Documentation   Test case pour expliquer
-...             les settings de RBF
-#Library     SeleniumLibrary
-
+Library  SeleniumLibrary
+Library  OperatingSystem
+Library  String
+Library  Collections
 
 *** Variables ***
-${MSG}=     Hello tout le monde
-${MSG2}=     Hello tout le mondeBis
-*** Keywords ***
-Log hello world
-    log     ${MSG}
-
-Log hello worldBis
-    log     ${MSG2}
+${URL1}     http://montrealgazette.com/
+${URL2}     https://www.usatoday.com/
+${URL3}     http://www.foxnews.com/
+${URL4}     http://www.cnn.com/
+${URL5}     https://ca.reuters.com/
 
 *** Test Cases ***
-Afficher un texte1
-    [Tags]  1
-    Log hello world
+Validate Availability
+    [Template]    Open URL
+    ${URL1}
+    ${URL2}
+    ${URL3}
+    ${URL4}
+    ${URL5}
 
-Afficher un texte2
-    [Tags]  2
-    Log hello worldBis
+*** Keywords ***
+Open URL
+    [Arguments]  ${URL}
+    Open Browser    ${URL}     Chrome
