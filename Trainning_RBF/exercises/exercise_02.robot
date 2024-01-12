@@ -1,13 +1,14 @@
 *** Settings ***
 Documentation    Exercise 02 - Using variables
 Library          SeleniumLibrary
+Library          Dialogs
 
 ### Exercise 1
 # Add a *** Variables *** section and define two variables in there:
 # - One that stores the home page URL - OK
 # - One that stores the browser to be used - OK
 *** Variables ***
-${URL}    http://parabank.parasoft.com
+${URL}    https://www.ticketingcine.fr/compte.php
 ${BROWSER}   Chrome
 
 *** Test Cases ***
@@ -16,10 +17,19 @@ Log in to ParaBank as John and check number of log out links
     # Replace the actual values for the homepage URL and the browser - OK
     # with the variable values you defined in Exercise 1
     Open Browser    ${URL}    ${BROWSER}
+
+    Wait Until Element Is Visible     xpath:/html/body/div/div/div[3]/button[1]
+    Click Element    xpath:/html/body/div/div/div[3]/button[1]
     Maximize Browser Window
-    Input Text  name:username  john
-    Input Text  name:password  demo
-    Log in
+
+    Input Text  id:email_connexion  livijif894@talmetry.com
+    Input Text  id:password_connexion  Toto2023@1992
+
+    Click Element     id:submit_connexion
+    Pause Execution    Execution paused. Press OK to continue.
+    Verification Email Contains
+    Close Browser
+    #Log in
 
 
 
@@ -29,13 +39,12 @@ Log in to ParaBank as John and check number of log out links
     #   (hint: use the link: locator with the visible text of the link as a value)
     #   Store the return value of this keyword in a variable, we need that in the next step
     # - Another that checks that the variable value stored in the previous step is equal to 1
-    Close Browser
+
 
 *** Keywords ***
-Log in
+Verification Email Contains
     Sleep    3
-    ${number_of_log_out_links}=  Page Should Contain Element    //*[@id="loginPanel"]/p[1]/a
-    Should Be Equal As Integers  ${number_of_log_out_links}  
+    Page Should Contain    ivijif894@talmetry.com    limit=1
 
 Log Out
     Sleep    3

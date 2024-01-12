@@ -3,7 +3,7 @@ Documentation    Example using custom keywords
 Library          SeleniumLibrary
 Test Setup       Open And Maximize  ${BASE_URL}  ${BROWSER}
 Test Teardown    Close Browser
-Resource         common_keywords.robot
+Resource         ../Ressource/CommonLibRes.resource
 
 *** Variables ***
 ${BASE_URL}  http://automationpractice.com

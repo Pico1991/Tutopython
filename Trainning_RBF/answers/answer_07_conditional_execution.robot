@@ -22,7 +22,7 @@ Log in to ParaBank as John and check if user has multiple accounts
     ${accounts}=  Get Number Of Accounts
     Run Keyword If  ${accounts} > 1  Log  John has multiple accounts
     ...  ELSE  Log  John has only a single account
-
+run
 ### Exercise 2
 # Add another test case that does the same as Exercise 1, but now for user 'parasoft' with password 'demo'
 Log in to ParaBank as Bob and check if user has multiple accounts

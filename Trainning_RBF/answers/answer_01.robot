@@ -8,6 +8,7 @@ Log in to ParaBank as John and check browser window title
     Maximize Browser Window
     Input Text  name:username  john
     Input Text  name:password  demo
-    Click Button  xpath://input[@value='Log In']
+    Click Button    xpath://input[@value='Log In']
     Title Should Be     ParaBank | Accounts Overview
     Close Browser
+C
